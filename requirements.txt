@@ -1,2 +1,2 @@
-pygame>=2.6,<3
+pygame-ce>=2.5,<3
 pymunk>=7,<8
