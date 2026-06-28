@@ -20,7 +20,7 @@ class PhysicsWorld:
         self.bus = bus
         self.space = pymunk.Space()
         self.space.gravity = (0, GRAVITY)
-        self.space.damping = 0.85  # 초당 15% 속도 감쇠 → 간식이 빠르게 안정
+        self.space.damping = 0.5   # 초당 50% 속도 감쇠 → 구름 현상 방지, 빠른 안정
         self._build_walls()
 
         self.factory = SnackFactory(self.space)

@@ -23,7 +23,7 @@ class SnackFactory:
 
         shape = pymunk.Circle(body, spec.radius)
         shape.elasticity = 0.0   # 탄성 제거 → 통통 튀지 않음
-        shape.friction = 0.9     # 높은 마찰 → 미끄러짐 감소
+        shape.friction = 1.0     # 최대 마찰 → 바닥/벽 접촉 시 즉시 제동
         shape.collision_type = COLLTYPE_SNACK
 
         snack = Snack(tier, body, shape, time.monotonic())
