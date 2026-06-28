@@ -1,11 +1,12 @@
-"""오디오 시스템: 머지/생성/펑 이벤트에 merge.mp3 재생 (Observer).
+"""오디오 시스템: 이벤트에 맞춰 효과음 재생 (Observer).
 
-assets/merge.mp3 가 있으면 재생하고, 없거나 믹서 초기화 실패 시 조용히 무시한다.
+assets/merge.mp3 — 머지/생성/펑
+assets/find.mp3  — 새 간식 최초 발견
 """
 import os
 
 from src.events.event_bus import EventBus
-from src.events.events import SnackMerged, BugiCreated, BugiPopped
+from src.events.events import SnackMerged, BugiCreated, BugiPopped, TierDiscovered
 
 try:
     import pygame
@@ -16,7 +17,7 @@ except Exception:  # pragma: no cover
 class AudioSystem:
     def __init__(self, bus: EventBus, assets_dir: str = "assets") -> None:
         self.enabled = False
-        self._sound = None
+        self._sounds: dict[str, object] = {}
         if pygame is not None:
             try:
                 if not pygame.mixer.get_init():
@@ -25,22 +26,25 @@ class AudioSystem:
             except Exception:
                 self.enabled = False
 
-        self._load(os.path.join(assets_dir, "merge.mp3"))
+        self._load("merge", os.path.join(assets_dir, "merge.mp3"))
+        self._load("find",  os.path.join(assets_dir, "find.mp3"))
 
-        bus.subscribe(SnackMerged, lambda e: self.play())
-        bus.subscribe(BugiCreated, lambda e: self.play())
-        bus.subscribe(BugiPopped, lambda e: self.play())
+        bus.subscribe(SnackMerged,     lambda _: self.play("merge"))
+        bus.subscribe(BugiCreated,     lambda _: self.play("merge"))
+        bus.subscribe(BugiPopped,      lambda _: self.play("merge"))
+        bus.subscribe(TierDiscovered,  lambda _: self.play("find"))
 
-    def _load(self, path: str) -> None:
+    def _load(self, key: str, path: str) -> None:
         if self.enabled and os.path.exists(path):
             try:
-                self._sound = pygame.mixer.Sound(path)
+                self._sounds[key] = pygame.mixer.Sound(path)
             except Exception:
                 pass
 
-    def play(self) -> None:
-        if self._sound is not None:
+    def play(self, key: str) -> None:
+        snd = self._sounds.get(key)
+        if snd is not None:
             try:
-                self._sound.play()
+                snd.play()
             except Exception:
                 pass
