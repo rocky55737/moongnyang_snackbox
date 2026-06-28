@@ -33,6 +33,7 @@ class TierSpec:
     name: str
     radius: float
     points: int
+    img_x_offset: int = 0  # 이미지 렌더 x 오프셋 (음수=왼쪽, 양수=오른쪽)
 
 
 # 체리 -> 옥수수 -> 아웃백 감자 -> 두쫀쿠 -> 닥터페퍼
@@ -43,7 +44,7 @@ TIERS = [
     TierSpec(2,  "아웃백 감자",   24,  3),
     TierSpec(3,  "두쫀쿠",        30,  6),
     TierSpec(4,  "닥터페퍼",      37, 10),
-    TierSpec(5,  "후라이드 치킨", 46, 15),
+    TierSpec(5,  "후라이드 치킨", 46, 15, -10),
     TierSpec(6,  "고기",          57, 21),
     TierSpec(7,  "키리쉬 케이크", 70, 28),
     TierSpec(8,  "햄버거",        87, 36),

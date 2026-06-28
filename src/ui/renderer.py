@@ -147,7 +147,8 @@ class Renderer:
     # --- 간식 (이미지 기반) ---
     def draw_snack(self, surface, x, y, tier, scale=1.0) -> None:
         spec = TIERS[tier]
-        cx, cy = int(x), int(y)
+        cx = int(x) + int(spec.img_x_offset * scale)
+        cy = int(y)
         img = self._snack_imgs[tier]
         if img:
             if abs(scale - 1.0) > 0.001:
