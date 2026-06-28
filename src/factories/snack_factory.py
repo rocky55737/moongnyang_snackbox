@@ -15,14 +15,15 @@ class SnackFactory:
 
     def create(self, tier: int, x: float, y: float) -> Snack:
         spec = TIERS[tier]
-        mass = (spec.radius ** 2) * 0.001
+        # 선형 질량: 반지름 제곱 대신 선형 비례 → 큰 간식이 작은 것을 날리는 현상 완화
+        mass = spec.radius * 0.04
         moment = pymunk.moment_for_circle(mass, 0, spec.radius)
         body = pymunk.Body(mass, moment)
         body.position = (x, y)
 
         shape = pymunk.Circle(body, spec.radius)
-        shape.elasticity = 0.12
-        shape.friction = 0.55
+        shape.elasticity = 0.0   # 탄성 제거 → 통통 튀지 않음
+        shape.friction = 0.9     # 높은 마찰 → 미끄러짐 감소
         shape.collision_type = COLLTYPE_SNACK
 
         snack = Snack(tier, body, shape, time.monotonic())

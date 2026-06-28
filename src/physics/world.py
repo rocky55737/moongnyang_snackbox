@@ -20,6 +20,7 @@ class PhysicsWorld:
         self.bus = bus
         self.space = pymunk.Space()
         self.space.gravity = (0, GRAVITY)
+        self.space.damping = 0.85  # 초당 15% 속도 감쇠 → 간식이 빠르게 안정
         self._build_walls()
 
         self.factory = SnackFactory(self.space)
@@ -40,8 +41,8 @@ class PhysicsWorld:
         ]
         for a, b in segments:
             seg = pymunk.Segment(static, a, b, 4)
-            seg.elasticity = 0.1
-            seg.friction = 0.9
+            seg.elasticity = 0.0
+            seg.friction = 1.0
             seg.collision_type = COLLTYPE_WALL
             self.space.add(seg)
 
