@@ -38,17 +38,17 @@ class TierSpec:
 # 체리 -> 옥수수 -> 아웃백 감자 -> 두쫀쿠 -> 닥터페퍼
 # -> 후라이드 치킨 -> 고기 -> 키리쉬 케이크 -> 햄버거 -> 포테이토 피자 -> 낙곱새
 TIERS = [
-    TierSpec(0,  "체리",          18,  0),
-    TierSpec(1,  "옥수수",        25,  1),
-    TierSpec(2,  "아웃백 감자",   33,  3),
-    TierSpec(3,  "두쫀쿠",        42,  6),
-    TierSpec(4,  "닥터페퍼",      52, 10),
-    TierSpec(5,  "후라이드 치킨", 63, 15),
-    TierSpec(6,  "고기",          75, 21),
-    TierSpec(7,  "키리쉬 케이크", 88, 28),
-    TierSpec(8,  "햄버거",       102, 36),
-    TierSpec(9,  "포테이토 피자", 117, 45),
-    TierSpec(10, "낙곱새",        133, 55),
+    TierSpec(0,  "체리",          16,  0),
+    TierSpec(1,  "옥수수",        20,  1),
+    TierSpec(2,  "아웃백 감자",   24,  3),
+    TierSpec(3,  "두쫀쿠",        30,  6),
+    TierSpec(4,  "닥터페퍼",      37, 10),
+    TierSpec(5,  "후라이드 치킨", 46, 15),
+    TierSpec(6,  "고기",          57, 21),
+    TierSpec(7,  "키리쉬 케이크", 70, 28),
+    TierSpec(8,  "햄버거",        87, 36),
+    TierSpec(9,  "포테이토 피자", 107, 45),
+    TierSpec(10, "낙곱새",        132, 55),
 ]
 MAX_TIER = len(TIERS) - 1
 

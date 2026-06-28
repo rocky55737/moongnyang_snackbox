@@ -63,11 +63,45 @@ class Renderer:
                 pass
         return None
 
+    def _crop_to_content(self, img: pygame.Surface) -> pygame.Surface:
+        """투명 패딩을 제거해 음식 콘텐츠 영역만 남긴다.
+
+        샘플링으로 비투명 픽셀 범위를 찾아 크롭하므로
+        원본 크기와 무관하게 물리 원에 딱 맞게 스케일된다.
+        """
+        w, h = img.get_size()
+        step = max(3, min(w, h) // 40)
+        min_x = min_y = 99999
+        max_x = max_y = -1
+        for x in range(0, w, step):
+            for y in range(0, h, step):
+                if img.get_at((x, y))[3] > 20:
+                    if x < min_x: min_x = x
+                    if x > max_x: max_x = x
+                    if y < min_y: min_y = y
+                    if y > max_y: max_y = y
+        if max_x < 0:
+            return img  # 알파 정보 없음 — 원본 반환
+        pad = step * 2
+        min_x = max(0, min_x - pad)
+        min_y = max(0, min_y - pad)
+        max_x = min(w - 1, max_x + pad)
+        max_y = min(h - 1, max_y + pad)
+        cw = max_x - min_x + 1
+        ch = max_y - min_y + 1
+        result = pygame.Surface((cw, ch), pygame.SRCALPHA)
+        result.fill((0, 0, 0, 0))
+        result.blit(img, (0, 0), pygame.Rect(min_x, min_y, cw, ch))
+        return result
+
     def _load_raw(self) -> list:
-        return [
-            self._load_one(os.path.join("assets", f"tier_{i}.png"))
-            for i in range(len(TIERS))
-        ]
+        imgs = []
+        for i in range(len(TIERS)):
+            img = self._load_one(os.path.join("assets", f"tier_{i}.png"))
+            if img is not None:
+                img = self._crop_to_content(img)
+            imgs.append(img)
+        return imgs
 
     def _scale_snack(self) -> list:
         imgs = []
