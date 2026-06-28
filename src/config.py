@@ -1,8 +1,4 @@
-"""게임 전역 설정 및 간식 단계(Tier) 정의.
-
-파이썬에서는 모듈 자체가 단일 인스턴스(싱글턴)처럼 동작하므로,
-별도 Singleton 클래스를 만들기보다 모듈 상수 + frozen dataclass로 설정을 표현한다.
-"""
+"""게임 전역 설정 및 간식 단계(Tier) 정의."""
 from dataclasses import dataclass
 
 # --- 화면/물리 ---
@@ -14,6 +10,10 @@ DANGER_Y = 116
 FPS = 60
 GRAVITY = 900.0
 
+# --- 하단 순서표 ---
+CHART_H = 32
+WINDOW_HEIGHT = HEIGHT + CHART_H
+
 # --- 충돌 타입 ---
 COLLTYPE_SNACK = 1
 COLLTYPE_WALL = 2
@@ -23,6 +23,7 @@ BG_TOP = (255, 255, 255)
 BG_BOTTOM = (241, 233, 255)
 DANGER_COLOR = (255, 111, 139)
 LAVENDER = (138, 107, 255)
+CHART_BG = (30, 22, 60)
 
 
 @dataclass(frozen=True)
@@ -31,25 +32,27 @@ class TierSpec:
     index: int
     name: str
     radius: float
-    color: tuple
-    ring: tuple
     points: int
 
 
-# 작은 간식 -> 큰 간식 -> 마스코트 부기
+# 체리 -> 옥수수 -> 아웃백 감자 -> 두쫀쿠 -> 닥터페퍼
+# -> 후라이드 치킨 -> 고기 -> 키리쉬 케이크 -> 햄버거 -> 포테이토 피자 -> 낙곱새
 TIERS = [
-    TierSpec(0, "초코송이",     18, (202, 162, 122), (169, 121, 79),  0),
-    TierSpec(1, "칸쵸",         25, (216, 176, 102), (180, 140, 63),  1),
-    TierSpec(2, "두바이초코",   33, (127, 174, 87),  (93, 138, 57),   3),
-    TierSpec(3, "과일케이크",   42, (246, 182, 207), (229, 137, 173), 6),
-    TierSpec(4, "파파존스피자", 52, (241, 193, 78),  (211, 158, 43),  10),
-    TierSpec(5, "모짜인더버거", 63, (231, 166, 75),  (197, 131, 44),  15),
-    TierSpec(6, "스테이크",     75, (217, 138, 147), (187, 102, 112), 21),
-    TierSpec(7, "부기",         88, (155, 224, 176), (108, 199, 139), 28),
+    TierSpec(0,  "체리",          18,  0),
+    TierSpec(1,  "옥수수",        25,  1),
+    TierSpec(2,  "아웃백 감자",   33,  3),
+    TierSpec(3,  "두쫀쿠",        42,  6),
+    TierSpec(4,  "닥터페퍼",      52, 10),
+    TierSpec(5,  "후라이드 치킨", 63, 15),
+    TierSpec(6,  "고기",          75, 21),
+    TierSpec(7,  "키리쉬 케이크", 88, 28),
+    TierSpec(8,  "햄버거",       102, 36),
+    TierSpec(9,  "포테이토 피자", 117, 45),
+    TierSpec(10, "낙곱새",        133, 55),
 ]
 MAX_TIER = len(TIERS) - 1
 
-# 떨어지는 간식 분포(작은 쪽 우대)
+# 떨어지는 간식 분포 (작은 쪽 우대)
 DROPPABLE = [0, 0, 0, 1, 1, 2, 3]
 
 BUGI_POP_BONUS = 100

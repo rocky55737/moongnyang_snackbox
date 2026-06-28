@@ -17,12 +17,21 @@ class PlayingState(BaseState):
         self.next = random.choice(DROPPABLE)
         self.cooldown = 0.0
         self.danger_t = 0.0
+        self._popup: int | None = None     # 현재 표시 중인 팝업의 tier
+        self._popup_x_rect = None          # X 버튼 클릭 영역
 
     def _clamp_aim(self) -> None:
         r = TIERS[self.current].radius
         self.aim_x = max(WALL + r, min(WIDTH - WALL - r, self.aim_x))
 
     def handle_event(self, event) -> None:
+        if self._popup is not None:
+            # 팝업이 열려 있으면 X 클릭만 처리
+            if event.type == pygame.MOUSEBUTTONUP:
+                if self._popup_x_rect and self._popup_x_rect.collidepoint(event.pos):
+                    self._popup = None
+            return
+
         if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
             self.aim_x = event.pos[0]
             self._clamp_aim()
@@ -35,13 +44,25 @@ class PlayingState(BaseState):
             return
         self._clamp_aim()
         self.game.world.spawn(self.current, self.aim_x, DROP_Y)
+        self.game.discovery.check_new(self.current)
         self.current, self.next = self.next, random.choice(DROPPABLE)
         self.cooldown = self.DROP_COOLDOWN
 
     def update(self, dt: float) -> None:
+        # 팝업이 없을 때만 다음 팝업을 꺼낸다
+        if self._popup is None:
+            pending = self.game.discovery.pop_pending()
+            if pending is not None:
+                self._popup = pending
+
+        self.game.particles.update(dt)
+
+        # 팝업 표시 중에는 물리 정지
+        if self._popup is not None:
+            return
+
         self.cooldown = max(0.0, self.cooldown - dt)
         self.game.world.step(dt)
-        self.game.particles.update(dt)
         if self.game.world.is_in_danger():
             self.danger_t += dt
             if self.danger_t >= self.DANGER_HOLD:
@@ -55,7 +76,7 @@ class PlayingState(BaseState):
         r = self.game.renderer
         r.draw_background(surface)
         r.draw_danger_line(surface)
-        if self.cooldown <= 0:
+        if self.cooldown <= 0 and self._popup is None:
             r.draw_preview(surface, self.aim_x, self.current)
         for snack in self.game.world.snacks:
             r.draw_snack(surface, snack.position.x, snack.position.y, snack.tier)
@@ -63,3 +84,7 @@ class PlayingState(BaseState):
         r.draw_next(surface, self.next)
         r.draw_text(surface, f"SCORE {self.game.score.score}", 19, (150, 100, 40), topleft=(WALL, 10))
         r.draw_text(surface, f"BEST {self.game.score.best}", 13, (160, 140, 200), topleft=(WALL, 33))
+        r.draw_tier_chart(surface, self.game.discovery.discovered)
+
+        if self._popup is not None:
+            self._popup_x_rect = r.draw_popup(surface, self._popup)

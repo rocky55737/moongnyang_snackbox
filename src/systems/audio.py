@@ -1,7 +1,6 @@
-"""오디오 시스템: 이벤트에 맞춰 효과음 재생 (Observer).
+"""오디오 시스템: 머지/생성/펑 이벤트에 merge.mp3 재생 (Observer).
 
-assets/ 에 wav가 있으면 재생하고, 없거나 믹서 초기화 실패 시 조용히 무시한다.
-(외부 의존성 없이 동작하도록 설계)
+assets/merge.mp3 가 있으면 재생하고, 없거나 믹서 초기화 실패 시 조용히 무시한다.
 """
 import os
 
@@ -17,7 +16,7 @@ except Exception:  # pragma: no cover
 class AudioSystem:
     def __init__(self, bus: EventBus, assets_dir: str = "assets") -> None:
         self.enabled = False
-        self.sounds: dict[str, object] = {}
+        self._sound = None
         if pygame is not None:
             try:
                 if not pygame.mixer.get_init():
@@ -26,24 +25,22 @@ class AudioSystem:
             except Exception:
                 self.enabled = False
 
-        self._load("merge", os.path.join(assets_dir, "merge.wav"))
-        self._load("bugi", os.path.join(assets_dir, "bugi.wav"))
+        self._load(os.path.join(assets_dir, "merge.mp3"))
 
-        bus.subscribe(SnackMerged, lambda e: self.play("merge"))
-        bus.subscribe(BugiCreated, lambda e: self.play("bugi"))
-        bus.subscribe(BugiPopped, lambda e: self.play("bugi"))
+        bus.subscribe(SnackMerged, lambda e: self.play())
+        bus.subscribe(BugiCreated, lambda e: self.play())
+        bus.subscribe(BugiPopped, lambda e: self.play())
 
-    def _load(self, key: str, path: str) -> None:
+    def _load(self, path: str) -> None:
         if self.enabled and os.path.exists(path):
             try:
-                self.sounds[key] = pygame.mixer.Sound(path)
+                self._sound = pygame.mixer.Sound(path)
             except Exception:
                 pass
 
-    def play(self, key: str) -> None:
-        snd = self.sounds.get(key)
-        if snd is not None:
+    def play(self) -> None:
+        if self._sound is not None:
             try:
-                snd.play()
+                self._sound.play()
             except Exception:
                 pass

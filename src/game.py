@@ -1,12 +1,13 @@
-"""Game: 메인 루프 + 상태 전환 + 시스템 조립(컴포지션 루트)."""
+"""Game: 메인 루프 + 상태 전환 + 시스템 조립 (컴포지션 루트)."""
 import pygame
 
-from src.config import WIDTH, HEIGHT, FPS
+from src.config import WIDTH, HEIGHT, WINDOW_HEIGHT, FPS
 from src.events.event_bus import EventBus
 from src.physics.world import PhysicsWorld
 from src.systems.score import ScoreSystem
 from src.systems.particles import ParticleSystem
 from src.systems.audio import AudioSystem
+from src.systems.discovery import DiscoverySystem
 from src.ui.renderer import Renderer
 from src.states.playing_state import PlayingState
 
@@ -14,7 +15,7 @@ from src.states.playing_state import PlayingState
 class Game:
     def __init__(self) -> None:
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("뭉냥이의 간식 상자")
         self.clock = pygame.time.Clock()
 
@@ -24,6 +25,7 @@ class Game:
         self.score = ScoreSystem(self.bus)
         self.particles = ParticleSystem(self.bus)
         self.audio = AudioSystem(self.bus)
+        self.discovery = DiscoverySystem(self.bus)
         self.renderer = Renderer()
 
         self.running = True
@@ -38,6 +40,7 @@ class Game:
         self.world.clear()
         self.score.reset()
         self.particles.clear()
+        self.discovery.reset()
         self.change_state(PlayingState(self))
 
     def run(self, max_frames=None) -> None:

@@ -1,4 +1,4 @@
-"""도메인 이벤트 정의(Observer 패턴에서 발행/구독되는 메시지)."""
+"""도메인 이벤트 정의 (Observer 패턴에서 발행/구독되는 메시지)."""
 from dataclasses import dataclass
 
 
@@ -24,3 +24,8 @@ class BugiPopped:
 @dataclass(frozen=True)
 class GameOver:
     score: int
+
+
+@dataclass(frozen=True)
+class TierDiscovered:
+    tier: int
