@@ -1,13 +1,15 @@
 """Game: 메인 루프 + 상태 전환 + 시스템 조립 (컴포지션 루트)."""
+import os
 import pygame
 
-from src.config import WIDTH, HEIGHT, WINDOW_HEIGHT, FPS
+from src.config import WIDTH, WINDOW_HEIGHT, FPS
 from src.events.event_bus import EventBus
 from src.physics.world import PhysicsWorld
 from src.systems.score import ScoreSystem
 from src.systems.particles import ParticleSystem
 from src.systems.audio import AudioSystem
 from src.systems.discovery import DiscoverySystem
+from src.systems.video_player import VideoPlayer
 from src.ui.renderer import Renderer
 from src.states.playing_state import PlayingState
 
@@ -15,7 +17,15 @@ from src.states.playing_state import PlayingState
 class Game:
     def __init__(self) -> None:
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, WINDOW_HEIGHT))
+
+        # 비디오 스트립 (게임 오른쪽에 표시)
+        self.video = VideoPlayer(
+            os.path.join("assets", "MoonNyang_Yay.mp4"),
+            WINDOW_HEIGHT,
+        )
+        window_w = WIDTH + self.video.strip_w
+
+        self.screen = pygame.display.set_mode((window_w, WINDOW_HEIGHT))
         pygame.display.set_caption("뭉냥이의 간식 상자")
         self.clock = pygame.time.Clock()
 
@@ -52,8 +62,10 @@ class Game:
                     self.running = False
                 else:
                     self.state.handle_event(event)
+            self.video.update(dt)
             self.state.update(dt)
             self.state.draw(self.screen)
+            self.video.draw(self.screen, WIDTH, 0)
             pygame.display.flip()
             frames += 1
             if max_frames is not None and frames >= max_frames:
