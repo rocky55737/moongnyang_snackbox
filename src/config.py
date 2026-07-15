@@ -33,18 +33,19 @@ class TierSpec:
     name: str
     radius: float
     points: int
-    img_x_offset: int = 0  # 이미지 렌더 x 오프셋 (음수=왼쪽, 양수=오른쪽)
+    img_x_offset: int = 0      # 이미지 렌더 x 오프셋 (음수=왼쪽, 양수=오른쪽)
+    display_radius: float = 0  # 이미지 표시 반지름 (0이면 radius 그대로 사용)
 
 
 # 체리 -> 옥수수 -> 아웃백 감자 -> 두쫀쿠 -> 닥터페퍼
 # -> 후라이드 치킨 -> 고기 -> 키리쉬 케이크 -> 햄버거 -> 포테이토 피자 -> 낙곱새
 TIERS = [
-    TierSpec(0,  "체리",          16,  0),
+    TierSpec(0,  "체리",          16,  0), # TierSpec(번호, "이름", 반지름, 점수, 이미지 x 오프셋)
     TierSpec(1,  "옥수수",        20,  1),
     TierSpec(2,  "아웃백 감자",   24,  3),
     TierSpec(3,  "두쫀쿠",        30,  6),
     TierSpec(4,  "닥터페퍼",      37, 10),
-    TierSpec(5,  "후라이드 치킨", 46, 15, -10),
+    TierSpec(5,  "후라이드 치킨", 38, 15, -10, 46),
     TierSpec(6,  "고기",          57, 21),
     TierSpec(7,  "키리쉬 케이크", 70, 28),
     TierSpec(8,  "햄버거",        87, 36),

@@ -103,10 +103,14 @@ class Renderer:
             imgs.append(img)
         return imgs
 
+    def _img_radius(self, spec) -> float:
+        """이미지 표시에 쓸 반지름. display_radius가 0이면 physics radius 사용."""
+        return spec.display_radius if spec.display_radius > 0 else spec.radius
+
     def _scale_snack(self) -> list:
         imgs = []
         for i, spec in enumerate(TIERS):
-            size = max(1, int(spec.radius * 2))
+            size = max(1, int(self._img_radius(spec) * 2))
             raw = self._raw_imgs[i]
             imgs.append(
                 pygame.transform.smoothscale(raw, (size, size)) if raw else None
@@ -152,7 +156,7 @@ class Renderer:
         img = self._snack_imgs[tier]
         if img:
             if abs(scale - 1.0) > 0.001:
-                size = max(1, int(spec.radius * 2 * scale))
+                size = max(1, int(self._img_radius(spec) * 2 * scale))
                 img = pygame.transform.smoothscale(img, (size, size))
             surface.blit(img, img.get_rect(center=(cx, cy)))
         else:
