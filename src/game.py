@@ -1,5 +1,4 @@
 """Game: 메인 루프 + 상태 전환 + 시스템 조립 (컴포지션 루트)."""
-import os
 import pygame
 
 from src.config import WIDTH, WINDOW_HEIGHT, FPS
@@ -9,7 +8,7 @@ from src.systems.score import ScoreSystem
 from src.systems.particles import ParticleSystem
 from src.systems.audio import AudioSystem
 from src.systems.discovery import DiscoverySystem
-from src.systems.video_player import VideoPlayer
+from src.systems.video_player import CharacterVideo
 from src.ui.renderer import Renderer
 from src.states.playing_state import PlayingState
 
@@ -18,19 +17,17 @@ class Game:
     def __init__(self) -> None:
         pygame.init()
 
-        # 비디오 스트립 (게임 오른쪽에 표시)
-        self.video = VideoPlayer(
-            os.path.join("assets", "MoonNyang_Yay.mp4"),
-            WINDOW_HEIGHT,
-        )
+        # 컴포지션 루트: 이벤트 버스를 공유하며 시스템들을 연결한다.
+        self.bus = EventBus()
+
+        # 캐릭터 비디오 스트립 (게임 오른쪽). 머지→Yay, 게임오버→Crying 을 구독한다.
+        self.video = CharacterVideo(self.bus, target_height=WINDOW_HEIGHT)
         window_w = WIDTH + self.video.strip_w
 
         self.screen = pygame.display.set_mode((window_w, WINDOW_HEIGHT))
         pygame.display.set_caption("뭉냥이의 간식 상자")
         self.clock = pygame.time.Clock()
 
-        # 컴포지션 루트: 이벤트 버스를 공유하며 시스템들을 연결한다.
-        self.bus = EventBus()
         self.world = PhysicsWorld(self.bus)
         self.score = ScoreSystem(self.bus)
         self.particles = ParticleSystem(self.bus)
@@ -51,6 +48,7 @@ class Game:
         self.score.reset()
         self.particles.clear()
         self.discovery.reset()
+        self.video.reset()
         self.change_state(PlayingState(self))
 
     def run(self, max_frames=None) -> None:
