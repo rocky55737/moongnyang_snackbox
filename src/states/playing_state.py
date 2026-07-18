@@ -2,7 +2,7 @@
 import random
 import pygame
 
-from src.config import WIDTH, WALL, DROP_Y, TIERS, DROPPABLE
+from src.config import WIDTH, WALL, DROP_Y, TIERS, DROPPABLE, LEFT_W
 from src.states.base_state import BaseState
 from src.events.events import GameOver
 
@@ -25,18 +25,24 @@ class PlayingState(BaseState):
         self.aim_x = max(WALL + r, min(WIDTH - WALL - r, self.aim_x))
 
     def handle_event(self, event) -> None:
+        # 마우스 이벤트만 처리(그 외 이벤트엔 .pos 가 없음)
+        if event.type not in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            return
+        # 화면은 왼쪽 패널(LEFT_W)만큼 밀려 있으므로 마우스 x를 보정한다.
+        mx = event.pos[0] - LEFT_W
+
         if self._popup is not None:
             # 팝업이 열려 있으면 X 클릭만 처리
             if event.type == pygame.MOUSEBUTTONUP:
-                if self._popup_x_rect and self._popup_x_rect.collidepoint(event.pos):
+                if self._popup_x_rect and self._popup_x_rect.collidepoint((mx, event.pos[1])):
                     self._popup = None
             return
 
         if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
-            self.aim_x = event.pos[0]
+            self.aim_x = mx
             self._clamp_aim()
         elif event.type == pygame.MOUSEBUTTONUP:
-            self.aim_x = event.pos[0]
+            self.aim_x = mx
             self._drop()
 
     def _drop(self) -> None:

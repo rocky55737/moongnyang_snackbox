@@ -14,6 +14,11 @@ GRAVITY = 900.0
 CHART_H = 32
 WINDOW_HEIGHT = HEIGHT + CHART_H
 
+# --- 왼쪽 최고기록 패널 ---
+LEFT_W = 160
+PANEL_BG = (24, 18, 48)
+RANK_COLORS = ((255, 215, 106), (206, 214, 224), (207, 142, 92))  # 금/은/동
+
 # --- 충돌 타입 ---
 COLLTYPE_SNACK = 1
 COLLTYPE_WALL = 2
@@ -40,12 +45,12 @@ class TierSpec:
 # 체리 -> 옥수수 -> 아웃백 감자 -> 두쫀쿠 -> 닥터페퍼
 # -> 후라이드 치킨 -> 고기 -> 키리쉬 케이크 -> 햄버거 -> 포테이토 피자 -> 낙곱새
 TIERS = [
-    TierSpec(0,  "체리",          16,  0), # TierSpec(번호, "이름", 충돌 반지름, 점수, 이미지 x 오프셋, 이미지 반지름)
+    TierSpec(0,  "체리",          16,  0), # TierSpec(번호, "이름", 반지름, 점수, 이미지 x 오프셋)
     TierSpec(1,  "옥수수",        20,  1),
     TierSpec(2,  "아웃백 감자",   24,  3),
     TierSpec(3,  "두쫀쿠",        30,  6),
     TierSpec(4,  "닥터페퍼",      37, 10),
-    TierSpec(5,  "후라이드 치킨", 30, 15, -10, 42),
+    TierSpec(5,  "후라이드 치킨", 38, 15, -10, 46),
     TierSpec(6,  "고기",          57, 21),
     TierSpec(7,  "키리쉬 케이크", 70, 28),
     TierSpec(8,  "햄버거",        87, 36),

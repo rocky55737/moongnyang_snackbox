@@ -5,6 +5,7 @@ import pygame
 from src.config import (
     WIDTH, HEIGHT, WALL, GROUND_TOP, DROP_Y, DANGER_Y, CHART_H,
     TIERS, BG_TOP, BG_BOTTOM, DANGER_COLOR, LAVENDER, CHART_BG,
+    WINDOW_HEIGHT, LEFT_W, PANEL_BG, RANK_COLORS,
 )
 
 _CHART_ICON = CHART_H - 6   # 하단 순서표 아이콘 크기
@@ -252,6 +253,31 @@ class Renderer:
         pygame.draw.line(surface, (80, 50, 110), (cx2 + 4, cy2 - 4), (cx2 - 4, cy2 + 4), 2)
 
         return x_rect
+
+    # --- 왼쪽 최고기록 패널 ---
+    def draw_leaderboard(self, screen, records) -> None:
+        """화면 왼쪽 패널에 1·2·3위 최고기록을 그린다 (screen 절대 좌표)."""
+        screen.fill(PANEL_BG, pygame.Rect(0, 0, LEFT_W, WINDOW_HEIGHT))
+        pygame.draw.line(screen, (60, 45, 100), (LEFT_W - 1, 0), (LEFT_W - 1, WINDOW_HEIGHT), 2)
+
+        cx = LEFT_W // 2
+        self.draw_text(screen, "최고 기록", 21, (255, 158, 199), center=(cx, 34))
+        self.draw_text(screen, "TOP 3", 11, (150, 130, 205), center=(cx, 56))
+
+        row_y = 108
+        for i in range(3):
+            cy = row_y + i * 66
+            # 순위 뱃지
+            pygame.draw.circle(screen, RANK_COLORS[i], (30, cy), 16)
+            pygame.draw.circle(screen, (255, 255, 255), (30, cy), 16, 2)
+            self.draw_text(screen, str(i + 1), 18, (45, 32, 66), center=(30, cy))
+            # 점수 (우측 정렬)
+            if i < len(records):
+                self.draw_text(screen, f"{records[i]:,}", 23, (255, 255, 255),
+                               topright=(LEFT_W - 14, cy - 13))
+            else:
+                self.draw_text(screen, "-", 23, (110, 96, 140),
+                               topright=(LEFT_W - 14, cy - 13))
 
     # --- 텍스트 ---
     def draw_text(self, surface, text, size, color,
